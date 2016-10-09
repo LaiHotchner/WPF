@@ -48,12 +48,8 @@ namespace DrawDemo
             }
 
             DrawCanvas.Children.Clear();
-            //Task.Run(() =>
-            //{
 
             Draw(drawModel, count);
-
-            //});
         }
 
         private void Draw(DrawModel drawModel, int count)
