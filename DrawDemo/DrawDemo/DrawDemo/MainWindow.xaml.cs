@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,78 +10,81 @@ namespace DrawDemo
     /// <summary> 
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        private ObservableCollection<string> _drawType = new ObservableCollection<string>();
-        private Stopwatch watch = new Stopwatch();
-        private Brush greenBrush = Brushes.LightGreen;
-        private Brush redBrush = Brushes.Red;
-        private const double HEIGHT = 50;
-        private const double TOP_DISTANCE = 50;
-
+        public const double DrawHeight = 50;
+        public const double TopDistance = 25;
+        private readonly Brush _greenBrush = Brushes.LightGreen;
+        private readonly Brush _redBrush = Brushes.Red;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            _drawType.Add("Draw with rectangle ");
-            _drawType.Add("Draw with visual independent, DrawingContext.DrawRectangle");
-            _drawType.Add("Draw with visual compositional, DrawingContext.DrawRectangle ");
-            _drawType.Add("Draw with visual compositional, DrawingContext.DrawGeometry ");
-            _drawType.Add("Draw with WriteableBitmap (GDI+)");
-            Model.ItemsSource = _drawType;
-            Model.SelectedIndex = 0;
-        }
-
         private void DrawButton_Click(object sender, RoutedEventArgs e)
         {
-            var drawModel = (DrawModel)Model.SelectedIndex;
+            TotalTime.Text = "Calculating ...";
             int count;
-            var flag = int.TryParse(Count.Text, out count);
+            var flag = int.TryParse(DrawCount.Text, out count);
             if (!flag)
             {
                 MessageBox.Show("Please input draw count!");
                 return;
             }
 
-            DrawCanvas.Children.Clear();
+            int drawTimes;
+            flag = int.TryParse(DrawTimes.Text, out drawTimes);
+            if (!flag)
+            {
+                MessageBox.Show("Please input draw times!");
+                return;
+            }
 
-            Draw(drawModel, count);
+            Draw(drawTimes, count);
         }
 
-        private void Draw(DrawModel drawModel, int count)
+        private void Draw(int drawTimes, int count)
         {
-            watch = new Stopwatch();
-            watch.Start();
+            double drawMultiRectAverageTime;
+            double drawMultiElementAverageTime;
+            double drawOneElementMultiRectAverageTime;
+            double drawOneElementMultiGeometryAverageTime;
+            double drawBitAverageTime;
 
-            switch (drawModel)
+            drawMultiRectAverageTime = ExecuteTime(drawTimes, count, DrawMultiRectangle);
+            drawMultiElementAverageTime = ExecuteTime(drawTimes, count, DrawMultiElement);
+            drawOneElementMultiRectAverageTime = ExecuteTime(drawTimes, count, DrawOneElementMultiRect);
+            drawOneElementMultiGeometryAverageTime = ExecuteTime(drawTimes, count, DrawOneElementMultiGeometry);
+            drawBitAverageTime = ExecuteTime(drawTimes, count, DrawWriteableBitmap);
+
+            TotalTime.Text = "Draw Times : " + drawTimes + ", Draw Count : " + count + "\r\n" + 
+                             "Draw Multi Rect Average Time : " + drawMultiRectAverageTime + "ms \r\n" +
+                             "Draw Multi Element Average Time : " + drawMultiElementAverageTime + "ms \r\n" +
+                             "Draw One Element Multi Rect Average Time : " + drawOneElementMultiRectAverageTime + "ms \r\n" +
+                             "Draw One Element Multi Geometry Average Time : " + drawOneElementMultiGeometryAverageTime + "ms \r\n" +
+                             "Draw Bitmap Average Time : " + drawBitAverageTime + "ms \r\n";
+        }
+
+        private double ExecuteTime(int times, int count, Action<int> execute)
+        {
+            var watch = new Stopwatch();
+            watch.Start();
+            for (int i = 0; i < times; i++)
             {
-                case DrawModel.Rectangle:
-                    DrawRectangle(count);
-                    break;
-                case DrawModel.Independent_DrawRectangle:
-                    DrawVisualIndependent_DrawRectangle(count);
-                    break;
-                case DrawModel.Compositional_DrawRectangle:
-                    DrawCompositional_DrawRectangle(count);
-                    break;
-                case DrawModel.Compositional_DrawGeometry:
-                    DrawCompositional_DrawGeometry(count);
-                    break;
-                case DrawModel.WriteableBitmap:
-                    DrawWriteableBitmap(count);
-                    break;
+                execute(count);
             }
             watch.Stop();
-            TotalTime.Content = string.Format("Total spend time : {0} ms", watch.ElapsedMilliseconds);
+            return watch.ElapsedMilliseconds * 1.0 / times;
         }
 
-        private void DrawRectangle(int count)
+        private void DrawMultiRectangle(int count)
         {
-            var totalWidth = DrawCanvas.ActualWidth;
+            Rect.Children.Clear();
+
+            if (IsDrawMultiRect.IsChecked != null && IsDrawMultiRect.IsChecked.Value == false) return;
+
+            var totalWidth = Rect.ActualWidth;
             var interval = totalWidth / count;
             var position = 0.0;
             for (int i = 0; i < count; i++)
@@ -90,27 +93,30 @@ namespace DrawDemo
                 {
                     StrokeThickness = 0,
                     Width = interval,
-                    Height = HEIGHT,
+                    Height = DrawHeight,
                 };
                 if (i % 2 == 0)
                 {
-                    insertShape.Fill = greenBrush;
+                    insertShape.Fill = _greenBrush;
                 }
                 else
                 {
-                    insertShape.Fill = redBrush;
+                    insertShape.Fill = _redBrush;
                 }
 
                 Canvas.SetLeft(insertShape, position);
-                Canvas.SetTop(insertShape, TOP_DISTANCE);
-                DrawCanvas.Children.Add(insertShape);
+                Canvas.SetTop(insertShape, TopDistance);
+                Rect.Children.Add(insertShape);
                 position += interval;
             }
         }
 
-        private void DrawVisualIndependent_DrawRectangle(int count)
+        private void DrawMultiElement(int count)
         {
-            var totalWidth = DrawCanvas.ActualWidth;
+            MultiElement.Children.Clear();
+            if (IsDrawMultiElement.IsChecked != null && IsDrawMultiElement.IsChecked.Value == false) return;
+
+            var totalWidth = MultiElement.ActualWidth;
             var interval = totalWidth / count;
             var position = 0.0;
             for (int i = 0; i < count; i++)
@@ -118,49 +124,44 @@ namespace DrawDemo
                 Brush brush;
                 if (i % 2 == 0)
                 {
-                    brush = greenBrush;
+                    brush = _greenBrush;
                 }
                 else
                 {
-                    brush = redBrush;
+                    brush = _redBrush;
                 }
                 var oneVisual = new OneElementOneVisual();
-                oneVisual.DrawRectangle(brush, position, TOP_DISTANCE, interval, HEIGHT);
+                oneVisual.DrawRectangle(brush, position, TopDistance, interval, DrawHeight);
 
                 position += interval;
-                DrawCanvas.Children.Add(oneVisual);
+                MultiElement.Children.Add(oneVisual);
             }
         }
 
-        private void DrawCompositional_DrawRectangle(int count)
+        private void DrawOneElementMultiRect(int count)
         {
-            var multiVisual = new OneElementMultiVisual();
-            multiVisual.DrawRectangle(greenBrush, redBrush, DrawCanvas.ActualWidth, HEIGHT, TOP_DISTANCE, count);
-            DrawCanvas.Children.Add(multiVisual);
+            OneElementMultiRect.Children.Clear();
+            if (IsDrawOneElementMultiRect.IsChecked != null && IsDrawOneElementMultiRect.IsChecked.Value == false) return;
+
+            var multiVisual = new OneElementVisualMultiRect();
+            multiVisual.DrawRectangle(_greenBrush, _redBrush, OneElementMultiRect.ActualWidth, DrawHeight, TopDistance, count);
+            OneElementMultiRect.Children.Add(multiVisual);
         }
 
-        private void DrawCompositional_DrawGeometry(int count)
+        private void DrawOneElementMultiGeometry(int count)
         {
-            var multiVisualGeometry = new OneElementMultiVisualGeometry();
-            multiVisualGeometry.DrawRectangle(greenBrush, redBrush, DrawCanvas.ActualWidth, HEIGHT, TOP_DISTANCE, count);
-            DrawCanvas.Children.Add(multiVisualGeometry);
+            OneElementMultiGeometry.Children.Clear();
+            if (IsDrawOneElementMultiVisual.IsChecked != null && IsDrawOneElementMultiVisual.IsChecked.Value == false) return;
+
+            var multiVisualGeometry = new OneElementVisualMultiGeometry();
+            multiVisualGeometry.DrawRectangle(_greenBrush, _redBrush, OneElementMultiGeometry.ActualWidth, DrawHeight, TopDistance, count);
+            OneElementMultiGeometry.Children.Add(multiVisualGeometry);
         }
 
         private void DrawWriteableBitmap(int count)
         {
-            var vm = new MinuteQuoteViewModel();
-            vm.LastPx = count;
-            bitmap.LatestQuote = vm;
+            if (IsDrawBitMap.IsChecked != null && IsDrawBitMap.IsChecked.Value == false) return;
+            bitmap.DrawCount = count;
         }
-
-    }
-
-    public enum DrawModel
-    {
-        Rectangle = 0,
-        Independent_DrawRectangle = 1,
-        Compositional_DrawRectangle = 2,
-        Compositional_DrawGeometry = 3,
-        WriteableBitmap = 4,
     }
 }

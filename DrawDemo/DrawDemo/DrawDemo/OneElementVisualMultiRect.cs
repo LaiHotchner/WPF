@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace DrawDemo
 {
-    public class OneElementMultiVisual : FrameworkElement
+    public class OneElementVisualMultiRect : FrameworkElement
     {
         private List<Visual> visuals = new List<Visual>();
 

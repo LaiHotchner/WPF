@@ -4,9 +4,10 @@ using System.Windows.Media;
 
 namespace DrawDemo
 {
-    public class OneElementMultiVisualGeometry : FrameworkElement
+    public class OneElementVisualMultiGeometry : FrameworkElement
     {
         private List<Visual> visuals = new List<Visual>();
+        private readonly Pen _pen = new Pen(new SolidColorBrush(Colors.Black), 1.0);
 
         //获取Visual的个数
         protected override int VisualChildrenCount
@@ -59,7 +60,7 @@ namespace DrawDemo
 
             streamGemotryContext.Close();
             streamGemotry.Freeze();
-            dc.DrawGeometry(greenBrush, null, streamGemotry);
+            dc.DrawGeometry(greenBrush, _pen, streamGemotry);
             dc.Close();
             AddVisual(visual);
 
@@ -67,7 +68,7 @@ namespace DrawDemo
 
         private void DrawGemotry(StreamGeometryContext streamGeometryContext, double totalWidth, double height, double topDistance, int count)
         {
-            var interval = totalWidth / count;
+            var interval = totalWidth / (count * 2);
             var position = 0.0;
             for (int i = 0; i < count; i++)
             {

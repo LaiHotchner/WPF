@@ -71,8 +71,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OneElementMultiVisual.cs" />
-    <Compile Include="OneElementMultiVisualGeometry.cs" />
+    <Compile Include="OneElementVisualMultiRect.cs" />
+    <Compile Include="OneElementVisualMultiGeometry.cs" />
     <Compile Include="OneElementOneVisual.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
