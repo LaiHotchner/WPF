@@ -1,43 +1,20 @@
-﻿using System.Windows;
+﻿using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using GDI = System.Drawing;
 
 namespace DrawDemo
 {
-    public class WriteableBitmapRectangle : FrameworkElement
+    public class WriteableBitmapRectangle : Image
     {
-        #region DependencyProperties
-
-        public static readonly DependencyProperty DrawCountProperty =
-            DependencyProperty.Register("DrawCount", typeof(int), typeof(WriteableBitmapRectangle),
-            new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.None, OnDrawCountPropertyyChanged));
-
-        private static void OnDrawCountPropertyyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            WriteableBitmapRectangle trendLine = (WriteableBitmapRectangle)d;
-            int drawCount;
-            if (int.TryParse(e.NewValue.ToString(), out drawCount))
-            {
-                trendLine.DrawTrendLine(drawCount);
-            }
-        }
-
-        public int DrawCount
-        {
-            get { return (int)GetValue(DrawCountProperty); }
-            set { SetValue(DrawCountProperty, value); }
-        }
-
-        #endregion
-
-        private int _width ;
-        private int _height ;
+        private int _width;
+        private int _height;
         private WriteableBitmap _bitmap;
-        private readonly GDI.Pen _pen = new GDI.Pen(GDI.Color.Orange);
-        private readonly GDI.Pen _bluePen = new GDI.Pen(GDI.Color.Blue);
 
-        private void DrawTrendLine(float totalCount)
+        public void DrawTrendLine(float totalCount)
         {
             if (double.IsNaN(totalCount))
                 return;
@@ -50,10 +27,10 @@ namespace DrawDemo
             {
                 using (GDI.Graphics backBufferGraphics = GDI.Graphics.FromImage(backBufferBitmap))
                 {
-                    backBufferGraphics.SmoothingMode = GDI.Drawing2D.SmoothingMode.HighSpeed;
-                    backBufferGraphics.CompositingQuality = GDI.Drawing2D.CompositingQuality.HighSpeed;
+                    backBufferGraphics.SmoothingMode = SmoothingMode.HighSpeed;
+                    backBufferGraphics.CompositingQuality = CompositingQuality.HighSpeed;
 
-                    backBufferGraphics.Clear(GDI.Color.Transparent);
+                    ExecuteClear(backBufferGraphics);
 
                     float interval = _width / totalCount;
 
@@ -61,11 +38,11 @@ namespace DrawDemo
                     {
                         if (i % 2 == 0)
                         {
-                            backBufferGraphics.DrawRectangle(_bluePen, i * interval, (float)MainWindow.TopDistance, interval, (float)MainWindow.DrawHeight);
+                            backBufferGraphics.FillRectangle(GetFillBrush(i), i * interval, (float)MainWindow.TopDistance, interval / 2, (float)MainWindow.DrawHeight);
                         }
                         else
                         {
-                            backBufferGraphics.DrawRectangle(_pen, i * interval, (float)MainWindow.TopDistance, interval, (float)MainWindow.DrawHeight);
+                            backBufferGraphics.FillRectangle(GetFillBrush(i), i * interval, (float)MainWindow.TopDistance, interval / 2, (float)MainWindow.DrawHeight);
                         }
                     }
                     backBufferGraphics.Flush();
@@ -79,10 +56,40 @@ namespace DrawDemo
         {
             if (_bitmap == null)
             {
-                _width = (int)RenderSize.Width;
-                _height = (int)RenderSize.Height;
+                _width = (int)(RenderSize.Width == 0 ? 1000 : RenderSize.Width);
+                _height = (int)(RenderSize.Height == 0 ? 100 : RenderSize.Height);
                 _bitmap = new WriteableBitmap(_width, _height, 96, 96, PixelFormats.Bgr24, null);
 
+                _bitmap.Lock();
+
+                using (GDI.Bitmap backBufferBitmap = new GDI.Bitmap(_width, _height,
+                    _bitmap.BackBufferStride, GDI.Imaging.PixelFormat.Format24bppRgb,
+                    _bitmap.BackBuffer))
+                {
+                    using (GDI.Graphics backBufferGraphics = GDI.Graphics.FromImage(backBufferBitmap))
+                    {
+                        backBufferGraphics.SmoothingMode = SmoothingMode.HighSpeed;
+                        backBufferGraphics.CompositingQuality = CompositingQuality.HighSpeed;
+
+                        ExecuteClear(backBufferGraphics);
+
+                        backBufferGraphics.Flush();
+                    }
+                }
+                _bitmap.AddDirtyRect(new Int32Rect(0, 0, _width, _height));
+                _bitmap.Unlock();
+                Source = _bitmap;
+            }
+
+
+            //dc.DrawImage(_bitmap, new Rect(0, 0, RenderSize.Width, RenderSize.Height));
+            base.OnRender(dc);
+        }
+
+        public void Clear()
+        {
+            if (_bitmap != null)
+            {
                 _bitmap.Lock();
                 using (GDI.Bitmap backBufferBitmap = new GDI.Bitmap(_width, _height,
                     _bitmap.BackBufferStride, GDI.Imaging.PixelFormat.Format24bppRgb,
@@ -90,19 +97,40 @@ namespace DrawDemo
                 {
                     using (GDI.Graphics backBufferGraphics = GDI.Graphics.FromImage(backBufferBitmap))
                     {
-                        backBufferGraphics.SmoothingMode = GDI.Drawing2D.SmoothingMode.HighSpeed;
-                        backBufferGraphics.CompositingQuality = GDI.Drawing2D.CompositingQuality.HighSpeed;
-
-                        backBufferGraphics.Clear(GDI.Color.White);
-
-                        backBufferGraphics.Flush();
+                        ExecuteClear(backBufferGraphics);
                     }
                 }
                 _bitmap.AddDirtyRect(new Int32Rect(0, 0, _width, _height));
                 _bitmap.Unlock();
             }
-            dc.DrawImage(_bitmap, new Rect(0, 0, RenderSize.Width, RenderSize.Height));
-            base.OnRender(dc);
+        }
+
+        private GDI.Brush GetFillBrush(int index)
+        {
+            if (index % 2 == 0)
+            {
+                var startColor = GDI.Color.FromArgb(0xCC, 0xFF, 0xEE, 0x9F);
+                var endColor = GDI.Color.FromArgb(0xCC, 0xE2, 0xB4, 0x5F);
+                var background = new GDI.Drawing2D.LinearGradientBrush(new GDI.PointF(0.5f, 0f), new GDI.PointF(0.5f, 1.0f), startColor, endColor);
+                return background;
+            }
+            else
+            {
+                return new GDI.SolidBrush(GDI.Color.Blue);
+            }
+        }
+
+        private GDI.Brush GetBackground()
+        {
+            var startColor = GDI.Color.FromArgb(0xCC, 0x18, 0x18, 0x18); 
+            var endColor = GDI.Color.FromArgb(0xCC, 0x4d, 0x4d, 0x4d);
+            var background = new GDI.Drawing2D.LinearGradientBrush(new GDI.PointF(_width, 0), new GDI.PointF(_width, _height), startColor, endColor); 
+            return background;
+        }
+
+        private void ExecuteClear(GDI.Graphics backBufferGraphics)
+        {
+            backBufferGraphics.FillRectangle(GetBackground(), new GDI.RectangleF(0, 0, _width, _height));
         }
     }
 }

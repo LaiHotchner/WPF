@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -58,11 +59,13 @@ namespace DrawDemo
             drawOneElementMultiGeometryAverageTime = ExecuteTime(drawTimes, count, DrawOneElementMultiGeometry);
             drawBitAverageTime = ExecuteTime(drawTimes, count, DrawWriteableBitmap);
 
-            TotalTime.Text = "Draw Times : " + drawTimes + ", Draw Count : " + count + "\r\n" + 
+            TotalTime.Text = "Draw Times : " + drawTimes + ", Draw Count : " + count + "\r\n" +
                              "Draw Multi Rect Average Time : " + drawMultiRectAverageTime + "ms \r\n" +
                              "Draw Multi Element Average Time : " + drawMultiElementAverageTime + "ms \r\n" +
-                             "Draw One Element Multi Rect Average Time : " + drawOneElementMultiRectAverageTime + "ms \r\n" +
-                             "Draw One Element Multi Geometry Average Time : " + drawOneElementMultiGeometryAverageTime + "ms \r\n" +
+                             "Draw One Element Multi Rect Average Time : " + drawOneElementMultiRectAverageTime +
+                             "ms \r\n" +
+                             "Draw One Element Multi Geometry Average Time : " + drawOneElementMultiGeometryAverageTime +
+                             "ms \r\n" +
                              "Draw Bitmap Average Time : " + drawBitAverageTime + "ms \r\n";
         }
 
@@ -75,7 +78,7 @@ namespace DrawDemo
                 execute(count);
             }
             watch.Stop();
-            return watch.ElapsedMilliseconds * 1.0 / times;
+            return watch.ElapsedMilliseconds*1.0/times;
         }
 
         private void DrawMultiRectangle(int count)
@@ -85,7 +88,7 @@ namespace DrawDemo
             if (IsDrawMultiRect.IsChecked != null && IsDrawMultiRect.IsChecked.Value == false) return;
 
             var totalWidth = Rect.ActualWidth;
-            var interval = totalWidth / count;
+            var interval = totalWidth/count;
             var position = 0.0;
             for (int i = 0; i < count; i++)
             {
@@ -95,7 +98,7 @@ namespace DrawDemo
                     Width = interval,
                     Height = DrawHeight,
                 };
-                if (i % 2 == 0)
+                if (i%2 == 0)
                 {
                     insertShape.Fill = _greenBrush;
                 }
@@ -117,12 +120,12 @@ namespace DrawDemo
             if (IsDrawMultiElement.IsChecked != null && IsDrawMultiElement.IsChecked.Value == false) return;
 
             var totalWidth = MultiElement.ActualWidth;
-            var interval = totalWidth / count;
+            var interval = totalWidth/count;
             var position = 0.0;
             for (int i = 0; i < count; i++)
             {
                 Brush brush;
-                if (i % 2 == 0)
+                if (i%2 == 0)
                 {
                     brush = _greenBrush;
                 }
@@ -141,27 +144,32 @@ namespace DrawDemo
         private void DrawOneElementMultiRect(int count)
         {
             OneElementMultiRect.Children.Clear();
-            if (IsDrawOneElementMultiRect.IsChecked != null && IsDrawOneElementMultiRect.IsChecked.Value == false) return;
+            if (IsDrawOneElementMultiRect.IsChecked != null && IsDrawOneElementMultiRect.IsChecked.Value == false)
+                return;
 
             var multiVisual = new OneElementVisualMultiRect();
-            multiVisual.DrawRectangle(_greenBrush, _redBrush, OneElementMultiRect.ActualWidth, DrawHeight, TopDistance, count);
+            multiVisual.DrawRectangle(_greenBrush, _redBrush, OneElementMultiRect.ActualWidth, DrawHeight, TopDistance,
+                count);
             OneElementMultiRect.Children.Add(multiVisual);
         }
 
         private void DrawOneElementMultiGeometry(int count)
         {
             OneElementMultiGeometry.Children.Clear();
-            if (IsDrawOneElementMultiVisual.IsChecked != null && IsDrawOneElementMultiVisual.IsChecked.Value == false) return;
+            if (IsDrawOneElementMultiVisual.IsChecked != null && IsDrawOneElementMultiVisual.IsChecked.Value == false)
+                return;
 
             var multiVisualGeometry = new OneElementVisualMultiGeometry();
-            multiVisualGeometry.DrawRectangle(_greenBrush, _redBrush, OneElementMultiGeometry.ActualWidth, DrawHeight, TopDistance, count);
+            multiVisualGeometry.DrawRectangle(_greenBrush, _redBrush, OneElementMultiGeometry.ActualWidth, DrawHeight,
+                TopDistance, count);
             OneElementMultiGeometry.Children.Add(multiVisualGeometry);
         }
 
         private void DrawWriteableBitmap(int count)
         {
+            bitmap.Clear();
             if (IsDrawBitMap.IsChecked != null && IsDrawBitMap.IsChecked.Value == false) return;
-            bitmap.DrawCount = count;
+            bitmap.DrawTrendLine(count);
         }
     }
 }

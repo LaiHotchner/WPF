@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
+using Pen = System.Windows.Media.Pen;
+using Point = System.Windows.Point;
 
 namespace DrawDemo
 {
@@ -63,7 +67,6 @@ namespace DrawDemo
             dc.DrawGeometry(greenBrush, _pen, streamGemotry);
             dc.Close();
             AddVisual(visual);
-
         }
 
         private void DrawGemotry(StreamGeometryContext streamGeometryContext, double totalWidth, double height, double topDistance, int count)

@@ -8,14 +8,17 @@
         Width="1100"
         Height="700"
         Title="MainWindow" >
-    <Grid ShowGridLines="True">
+    <Grid ShowGridLines="True" >
+        <Grid.Background>
+            <ImageBrush ImageSource="F:\Doc\GitHub\WPF\DrawDemo\DrawDemo\DrawDemo\source.jpg"/>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="100"/>
             <RowDefinition Height="100"/>
             <RowDefinition Height="100"/>
             <RowDefinition Height="100"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
 
@@ -23,12 +26,12 @@
                     VerticalAlignment="Center">
             <Label>Please select draw times and count</Label>
             <!--<ComboBox x:Name="DrawModel" MinWidth="400" Margin="10,0,10,0"></ComboBox>-->
-            <TextBox x:Name="DrawTimes" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">10</TextBox>
-            <TextBox x:Name="DrawCount" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">1000</TextBox>
-            <CheckBox x:Name="IsDrawMultiRect" IsChecked="True" Margin="5,0">MultiRect</CheckBox>
-            <CheckBox x:Name="IsDrawMultiElement" IsChecked="True" Margin="5,0">MultiElement</CheckBox>
-            <CheckBox x:Name="IsDrawOneElementMultiRect" IsChecked="True" Margin="5,0">OneElementMultiRect</CheckBox>
-            <CheckBox x:Name="IsDrawOneElementMultiVisual" IsChecked="True" Margin="5,0">OneElementMultiVisual</CheckBox>
+            <TextBox x:Name="DrawTimes" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">1</TextBox>
+            <TextBox x:Name="DrawCount" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">100</TextBox>
+            <CheckBox x:Name="IsDrawMultiRect" IsChecked="False" Margin="5,0">MultiRect</CheckBox>
+            <CheckBox x:Name="IsDrawMultiElement" IsChecked="False" Margin="5,0">MultiElement</CheckBox>
+            <CheckBox x:Name="IsDrawOneElementMultiRect" IsChecked="False" Margin="5,0">OneElementMultiRect</CheckBox>
+            <CheckBox x:Name="IsDrawOneElementMultiVisual" IsChecked="False" Margin="5,0">OneElementMultiVisual</CheckBox>
             <CheckBox x:Name="IsDrawBitMap" IsChecked="True" Margin="5,0">DrawBitMap</CheckBox>
             <Button MinWidth="100" Margin="10,0,10,0" Click="DrawButton_Click">Draw</Button>
         </StackPanel>
@@ -60,10 +63,12 @@
                 VerticalAlignment="Center"
                 Background="LightSkyBlue">
         </Canvas>
-    
-        <local:WriteableBitmapRectangle x:Name="bitmap" 
-                                        Grid.Row="5" />
 
+        <local:WriteableBitmapRectangle x:Name="bitmap" 
+                                        Opacity="0.6"
+                                        Stretch="Fill"
+                                        Grid.Row="5" />
+        
         <TextBox x:Name="TotalTime"
                    Grid.Row="6"
                    VerticalAlignment="Top">Total time</TextBox>
