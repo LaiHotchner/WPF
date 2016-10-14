@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -130,6 +131,7 @@ namespace DrawDemo
 
         private void ExecuteClear(GDI.Graphics backBufferGraphics)
         {
+            backBufferGraphics.Clear(GDI.Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF));
             backBufferGraphics.FillRectangle(GetBackground(), new GDI.RectangleF(0, 0, _width, _height));
         }
     }
