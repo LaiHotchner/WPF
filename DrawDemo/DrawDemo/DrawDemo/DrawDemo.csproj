@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,14 +57,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Image\ChainedBitmap.cs" />
+    <Compile Include="Image\ColorKeyBitmap.cs" />
+    <Compile Include="Image\CustomBitmap.cs" />
     <Compile Include="MergeDemo.xaml.cs">
       <DependentUpon>MergeDemo.xaml</DependentUpon>
     </Compile>
     <Compile Include="StartWindow.xaml.cs">
       <DependentUpon>StartWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WriteableBitmapOpacityMask.cs" />
-    <Compile Include="WriteableBitmapRectangle.cs" />
+    <Compile Include="Image\WriteableBitmapOpacityMask.cs" />
+    <Compile Include="Image\WriteableBitmapRectangle.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -116,13 +120,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Transparent.png" />
+    <Resource Include="Source\Transparent.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Capture.PNG" />
+    <Resource Include="Source\Capture.PNG" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="source.jpg" />
+    <Resource Include="Source\source.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Source\Transparent_2.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

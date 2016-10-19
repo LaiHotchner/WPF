@@ -1,15 +1,12 @@
 ﻿using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using System.Linq.Expressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using GDI = System.Drawing;
 
 namespace DrawDemo
 {
-    public class WriteableBitmapOpacityMask : Image
+    public class WriteableBitmapOpacityMask : System.Windows.Controls.Image
     {
         private int _width;
         private int _height;
@@ -71,7 +68,7 @@ namespace DrawDemo
 
         public void Clear()
         {
-            //OpacityMask = new SolidColorBrush(Colors.Transparent);
+            OpacityMask = new SolidColorBrush(Colors.Transparent);
         }
 
         private GDI.Brush GetOpacityBackground()

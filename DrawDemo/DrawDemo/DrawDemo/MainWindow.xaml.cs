@@ -168,12 +168,12 @@ namespace DrawDemo
         private void DrawWriteableBitmap(int count)
         {
             bitmap.Clear();
-            bitmapOpacity.Clear();
+            //bitmapOpacity.Clear();
 
             if (IsDrawBitMap.IsChecked != null && IsDrawBitMap.IsChecked.Value == false) return;
 
             bitmap.DrawTrendLine(count);
-            bitmapOpacity.DrawTrendLine(count);
+            //bitmapOpacity.DrawTrendLine(count);
         }
     }
 }
