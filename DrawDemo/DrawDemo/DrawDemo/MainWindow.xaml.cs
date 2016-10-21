@@ -78,7 +78,7 @@ namespace DrawDemo
                 execute(count);
             }
             watch.Stop();
-            return watch.ElapsedMilliseconds*1.0/times;
+            return watch.ElapsedMilliseconds * 1.0 / times;
         }
 
         private void DrawMultiRectangle(int count)
@@ -88,7 +88,7 @@ namespace DrawDemo
             if (IsDrawMultiRect.IsChecked != null && IsDrawMultiRect.IsChecked.Value == false) return;
 
             var totalWidth = Rect.ActualWidth;
-            var interval = totalWidth/count;
+            var interval = totalWidth / count;
             var position = 0.0;
             for (int i = 0; i < count; i++)
             {
@@ -98,7 +98,7 @@ namespace DrawDemo
                     Width = interval,
                     Height = DrawHeight,
                 };
-                if (i%2 == 0)
+                if (i % 2 == 0)
                 {
                     insertShape.Fill = _greenBrush;
                 }
@@ -120,19 +120,11 @@ namespace DrawDemo
             if (IsDrawMultiElement.IsChecked != null && IsDrawMultiElement.IsChecked.Value == false) return;
 
             var totalWidth = MultiElement.ActualWidth;
-            var interval = totalWidth/count;
+            var interval = totalWidth / count;
             var position = 0.0;
             for (int i = 0; i < count; i++)
             {
-                Brush brush;
-                if (i%2 == 0)
-                {
-                    brush = _greenBrush;
-                }
-                else
-                {
-                    brush = _redBrush;
-                }
+                Brush brush = GetTimelineLayerBackground(i);
                 var oneVisual = new OneElementOneVisual();
                 oneVisual.DrawRectangle(brush, position, TopDistance, interval, DrawHeight);
 
@@ -174,6 +166,32 @@ namespace DrawDemo
 
             bitmap.DrawTrendLine(count);
             //bitmapOpacity.DrawTrendLine(count);
+        }
+
+
+        private Brush GetTimelineLayerBackground(int index)
+        {
+            Brush background;
+            Color startColor;
+            Color endColor;
+
+            if (index % 2 == 0)
+            {
+                startColor = Color.FromArgb(0xCC, 0xFF, 0xEE, 0x9F);
+                endColor = Color.FromArgb(0xCC, 0xE2, 0xB4, 0x5F);
+            }
+            else
+            {
+                startColor = Color.FromArgb(0xCC, 0x45, 0x9E, 0x7E);
+                endColor = Color.FromArgb(0xCC, 0x06, 0x73, 0x4A);
+            }
+
+            background = new LinearGradientBrush(startColor, endColor, new Point(0.5, 0), new Point(0.5, 1.0));
+            if (background.CanFreeze)
+            {
+                background.Freeze();
+            }
+            return background;
         }
     }
 }

@@ -64,17 +64,15 @@ namespace DrawDemo
                     ExecuteClear(backBufferGraphics);
 
                     var interval = _width / totalCount;
+                    var width = interval;
+                    var height = (float)MainWindow.DrawHeight;
+                    var top = (float)MainWindow.TopDistance;
 
                     for (var i = 0; i <= totalCount; i++)
                     {
-                        if (i % 2 == 0)
-                        {
-                            backBufferGraphics.FillRectangle(GetFillBrush(i), i * interval, (float)MainWindow.TopDistance, interval / 2, (float)MainWindow.DrawHeight);
-                        }
-                        else
-                        {
-                            backBufferGraphics.FillRectangle(GetFillBrush(i), i * interval, (float)MainWindow.TopDistance, interval / 2, (float)MainWindow.DrawHeight);
-                        }
+                        var left = i * interval;
+                        var background = GetFillBrush(i, width, height);
+                        backBufferGraphics.FillRectangle(background, left, top, width, height);
                     }
                     backBufferGraphics.Flush();
                 }
@@ -82,23 +80,26 @@ namespace DrawDemo
             _bitmap.AddDirtyRect(new Int32Rect(0, 0, _width, _height));
             _bitmap.Unlock();
         }
-        private GDI.Brush GetFillBrush(int index)
+
+        private GDI.Brush GetFillBrush(int index, float width, float height)
         {
+            GDI.Color startColor;
+            GDI.Color endColor;
             if (index % 2 == 0)
             {
-                return new GDI.SolidBrush(GDI.Color.FromArgb(0xff, 0xff, 0x00, 0x00));
-                var startColor = GDI.Color.FromArgb(0xff, 0xFF, 0xEE, 0x9F);
-                var endColor = GDI.Color.FromArgb(0xff, 0xE2, 0xB4, 0x5F);
-                var background = new GDI.Drawing2D.LinearGradientBrush(new GDI.PointF(0.5f, 0f), new GDI.PointF(0.5f, 1.0f), startColor, endColor);
-                return background;
+                startColor = GDI.Color.FromArgb(0xCC, 0xFF, 0xEE, 0x9F);
+                endColor = GDI.Color.FromArgb(0xCC, 0xE2, 0xB4, 0x5F);
             }
             else
             {
-                return new GDI.SolidBrush(GDI.Color.FromArgb(0xff, 0x00, 0xff, 0x00));
-                //return new GDI.SolidBrush(GDI.Color.Blue);
+                startColor = GDI.Color.FromArgb(0xCC, 0x45, 0x9E, 0x7E);
+                endColor = GDI.Color.FromArgb(0xCC, 0x06, 0x73, 0x4A);
             }
-        }
 
+            var rect = new GDI.RectangleF(0f, 0f, 1, height * 2);
+            var background = new GDI.Drawing2D.LinearGradientBrush(rect, startColor, endColor, 90f);
+            return background;
+        }
 
         public void Clear()
         {
@@ -122,15 +123,6 @@ namespace DrawDemo
         private void ExecuteClear(GDI.Graphics backBufferGraphics)
         {
             backBufferGraphics.Clear(GDI.Color.Transparent);
-            //backBufferGraphics.FillRectangle(GetBackground(), new GDI.RectangleF(0, 0, _width, _height));
         }
-
-        //private GDI.Brush GetBackground()
-        //{
-        //    var startColor = GDI.Color.FromArgb(0xCC, 0x18, 0x18, 0x18);
-        //    var endColor = GDI.Color.FromArgb(0xCC, 0x4d, 0x4d, 0x4d);
-        //    var background = new GDI.Drawing2D.LinearGradientBrush(new GDI.PointF(_width, 0), new GDI.PointF(_width, _height), startColor, endColor);
-        //    return background;
-        //}
     }
 }

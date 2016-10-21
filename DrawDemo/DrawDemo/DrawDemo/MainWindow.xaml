@@ -15,10 +15,10 @@
             <SolidColorBrush x:Key="MaskBrush" Color="{DynamicResource WhiteColor}"></SolidColorBrush>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid ShowGridLines="True" >
-        <Grid.Background>
+    <Grid ShowGridLines="True" Background="White">
+        <!--<Grid.Background>
             <ImageBrush ImageSource="F:\Doc\GitHub\WPF\DrawDemo\DrawDemo\DrawDemo\Source\source.jpg"/>
-        </Grid.Background>
+        </Grid.Background>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="100"/>
@@ -34,10 +34,10 @@
                     VerticalAlignment="Center">
             <Label>Please select draw times and count</Label>
             <!--<ComboBox x:Name="DrawModel" MinWidth="400" Margin="10,0,10,0"></ComboBox>-->
-            <TextBox x:Name="DrawTimes" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">10</TextBox>
-            <TextBox x:Name="DrawCount" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">1000</TextBox>
+            <TextBox x:Name="DrawTimes" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">1</TextBox>
+            <TextBox x:Name="DrawCount" MinWidth="80" Margin="10,0,10,0" VerticalContentAlignment="Center">2</TextBox>
             <CheckBox x:Name="IsDrawMultiRect" IsChecked="False" Margin="5,0">MultiRect</CheckBox>
-            <CheckBox x:Name="IsDrawMultiElement" IsChecked="False" Margin="5,0">MultiElement</CheckBox>
+            <CheckBox x:Name="IsDrawMultiElement" IsChecked="True" Margin="5,0">MultiElement</CheckBox>
             <CheckBox x:Name="IsDrawOneElementMultiRect" IsChecked="False" Margin="5,0">OneElementMultiRect</CheckBox>
             <CheckBox x:Name="IsDrawOneElementMultiVisual" IsChecked="False" Margin="5,0">OneElementMultiVisual</CheckBox>
             <CheckBox x:Name="IsDrawBitMap" IsChecked="True" Margin="5,0">DrawBitMap</CheckBox>
@@ -55,7 +55,7 @@
                 Grid.Row="2"
                 Height="100"
                 VerticalAlignment="Center"
-                Background="LightSteelBlue">
+                Background="White">
         </Canvas>
 
         <Canvas x:Name="OneElementMultiRect"
